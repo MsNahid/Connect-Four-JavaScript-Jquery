@@ -4,12 +4,19 @@ class Connect4{
         this.COLS = 7;
         this.player = 'red'
         this.selector = selector;
+        this.isGameover = false;
+        this.onPlayerMove = function(){
+
+        }
         this.createGrid();
         this.setUpEventListeners();
     }
     
     createGrid(){
         const $board = $(this.selector);
+        $board.empty();
+        this.isGameover = false;
+        this.player = 'red';
         for(let row = 0; row < this.ROWS; row++){
             const $row = $('<div>').addClass('row');
             for(let col = 0; col < this.COLS; col++){
@@ -53,6 +60,7 @@ class Connect4{
         }); 
 
         $board.on('click', '.col.empty', function(){
+            if(that.isGameover) return;
             const col = $(this).data('col');
             const row = $(this).data('row');
             const $lastEmptyCell = findLastEmptyCell(col);
@@ -60,13 +68,19 @@ class Connect4{
             $lastEmptyCell.addClass(that.player);
             $lastEmptyCell.data('player', that.player);
 
-            const winner = that.checkForWinner(row, col);
+            const winner = that.checkForWinner(
+                $lastEmptyCell.data('row'),
+            $lastEmptyCell.data('col'));
             if(winner){
                  // do store stuff
+                 that.isGameover = true;
                 alert(`Game Over! player ${that.player} has won!`);
+                $('.col.empty').removeClass('empty');
             }
+
             
             that.player = (that.player === 'red') ? 'black' : 'red';
+            that.onPlayerMove();
             $(this).trigger('mouseenter');
         });
     }
@@ -79,6 +93,7 @@ class Connect4{
         }
 
         function checkDirection(direction){
+            //debugger;
             let total = 0;
             let i = row + direction.i;
             let j = col + direction.j;
@@ -105,11 +120,28 @@ class Connect4{
                 return null;
             }
         }
+        function checkDiagonalBLtoTR() {
+            return checkWin({i: 1, j: -1}, {i: 1, j: 1});
+        }
+
+        function checkDiagonalTLtoBR() {
+            return checkWin({i: 1, j: 1}, {i: -1, j: -1});
+        }
 
         function checkVerticals(){
             return checkWin({i : -1, j : 0}, {i: 1, j: 0});
         }
 
-        return checkVerticals();
+        function checkHorizontals() {
+            return checkWin({i: 0, j: -1}, {i: 0, j: 1});
+        }
+
+        return checkVerticals() || checkHorizontals() ||
+        checkDiagonalBLtoTR() || checkDiagonalTLtoBR();
+    }
+
+    restart(){
+        this.createGrid();
+        this.onPlayerMove();
     }
 }
