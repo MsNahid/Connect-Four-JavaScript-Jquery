@@ -2,6 +2,7 @@ class Connect4{
     constructor(selector){
         this.ROWS = 6;
         this.COLS = 7;
+        this.player = 'red'
         this.selector = selector;
         this.createGrid();
         this.setUpEventListeners();
@@ -25,6 +26,7 @@ class Connect4{
 
     setUpEventListeners(){
         const $board = $(this.selector);
+        const that = this;
         
         function findLastEmptyCell(col) {
             const cells = $(`.col[data-col='${col}']`);
@@ -41,11 +43,22 @@ class Connect4{
             const col = $(this).data('col');
             // console.log(col);
             const $lastEmptyCell = findLastEmptyCell(col);
-            $lastEmptyCell.addClass('next_red');
+            $lastEmptyCell.addClass(`next_${that.player}`);
+
         })  
 
         $board.on("mouseleave", ".col", function(){
-            $('.col').removeClass('next_red');
+            $('.col').removeClass(`next_${that.player}`);
         }) 
+
+        $board.on('click', '.col.empty', function(){
+            const col = $(this).data('col');
+            // const row = $(this).data('row');
+            const $lastEmptyCell = findLastEmptyCell(col);
+            $lastEmptyCell.removeClass(`empty next_${that.player}`);
+            $lastEmptyCell.addClass(that.player);
+            that.player = (that.player === 'red') ? 'black' : 'red';
+            $(this).trigger('mouseenter');
+        })
     }
 }
