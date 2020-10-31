@@ -39,11 +39,34 @@ function checkHorizontal(){
     return false;
 }
 
+function checkVertical(){
+    for(var col = 0; col < 7; col++){
+        for(var row = 0; row < 3; row++){
+            if(colorMatch(returnColor(row, col), returnColor(row + 1, col), returnColor(row + 2, col), returnColor(row + 3, col))){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function checkDigonal(){
+    for (var col = 0; col < 5; col++) {
+        for (var row = 0; row < 7; row++) {
+            if (colorMatch(returnColor(row,col), returnColor(row+1,col+1) ,returnColor(row+2,col+2), returnColor(row+3,col+3))) {
+                return true;
+            }else if (colorMatch(returnColor(row,col), returnColor(row-1,col+1) ,returnColor(row-2,col+2), returnColor(row-3,col+3))) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 function gameEnd(winner){
     $('h3').fadeOut('fast');
     $('h1').text(winner + "has won!, refresh browser for play again!")
-    alert('browser refresh');
-
 }
 var currentPlayer = 1;
 var currentPlayerName = player1;
@@ -56,8 +79,8 @@ $('.board button').on('click', function() {
     //console.log(col);
     var row = bottomButtonAvaible(col);
     changeColor(row, col, currentColor);
-    if(checkHorizontal()){
-        console.log("gameend");
+    if(checkHorizontal() || checkDigonal() || checkVertical()){
+        console.log("gameend")
         gameEnd(currentPlayerName);
         
     }
