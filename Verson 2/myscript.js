@@ -24,6 +24,27 @@ function bottomButtonAvaible(colIndex){
     }
 }
 
+function colorMatch(one, two, three, four){
+    return (one === two && one === three && one === four && one !== 'rgb(128, 128, 128)' && one !== undefined );
+}
+
+function checkHorizontal(){
+    for(var row = 0; row < 6; row++){
+        for(var col = 0; col < 4; col++){
+            if(colorMatch(returnColor(row, col), returnColor(row, col + 1), returnColor(row, col + 2), returnColor(row, col + 3))){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function gameEnd(winner){
+    $('h3').fadeOut('fast');
+    $('h1').text(winner + "has won!, refresh browser for play again!")
+    alert('browser refresh');
+
+}
 var currentPlayer = 1;
 var currentPlayerName = player1;
 var currentColor = player1Color;
@@ -35,7 +56,11 @@ $('.board button').on('click', function() {
     //console.log(col);
     var row = bottomButtonAvaible(col);
     changeColor(row, col, currentColor);
-
+    if(checkHorizontal()){
+        console.log("gameend");
+        gameEnd(currentPlayerName);
+        
+    }
     currentPlayer = currentPlayer * -1;
     if(currentPlayer < 0){
         currentPlayerName = player2;
@@ -45,7 +70,7 @@ $('.board button').on('click', function() {
         currentColor = player1Color;
     }
 
-    $('h3').text(currentPlayer + ": it's your turn, please pick a column to drop your blue chip");
+    $('h3').text(currentPlayerName + ": it's your turn, please pick a column to drop your blue chip");
 
 });
 
